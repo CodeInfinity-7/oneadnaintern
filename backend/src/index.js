@@ -1,12 +1,8 @@
-const express = require('express');
-const app = express();
+// src/index.js
+const app = require('./app');
+
 const port = 4000;
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello API' });
-});
-
 app.listen(port, () => {
-console.log(`Server running at http://localhost:${port}`);
-
+  console.log(`Server running at http://localhost:${port}`);
 });
