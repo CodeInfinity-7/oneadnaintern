@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react';
 
+interface Business {
+  id: number;
+  name: string;
+  // Add more fields if your backend returns them
+}
+
 export default function BusinessesPage() {
-  const [businesses, setBusinesses] = useState<any[]>([]);
+  const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('api/businesses') // full URL to Express
+    fetch('api/businesses')
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: Business[]) => {
         setBusinesses(data);
         setLoading(false);
       })
