@@ -1,5 +1,4 @@
-name: CI
-
+name: CI Pipeline
 
 on:
   push:
@@ -13,28 +12,62 @@ on:
       - dev
       - feature/**
 
-
 jobs:
-  build-and-test:
+  frontend:
+    name: Frontend Build and Test
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node.js for frontend
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Install dependencies (frontend)
+        working-directory: ./frontend
         run: npm install
 
-      - name: Lint
+      - name: Lint frontend
+        working-directory: ./frontend
         run: npm run lint
 
-      - name: Build
+      - name: Build frontend
+        working-directory: ./frontend
         run: npm run build
 
-      - name: Test
+      - name: Test frontend
+        working-directory: ./frontend
+        run: npm run test
+
+  backend:
+    name: Backend Build and Test
+    runs-on: ubuntu-latest
+    needs: frontend  # optional: run backend only after frontend succeeds
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js for backend
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (backend)
+        working-directory: ./backend
+        run: npm install
+
+      - name: Lint backend
+        working-directory: ./backend
+        run: npm run lint
+
+      - name: Build backend
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Test backend
+        working-directory: ./backend
         run: npm run test
