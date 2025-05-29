@@ -129,10 +129,11 @@ export default function NewBusinessPage() {
       } else {
         handleSuccess();
       }
-    } catch (err) {
-      setStatus('error');
-      setErrorMsg('Something went wrong while submitting.');
-    }
+    } } catch {
+  setStatus('error');
+  setErrorMsg('Something went wrong while submitting.');
+}
+
   };
 
   const handleSuccess = () => {
