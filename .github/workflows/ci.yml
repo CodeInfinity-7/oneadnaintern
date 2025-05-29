@@ -42,4 +42,6 @@ jobs:
           npm run test
 
       - name: Run npm audit for security vulnerabilities
-        run: npm audit --audit-level=moderate
+        run: |
+          cd frontend
+          npm audit --audit-level=moderate
