@@ -3,13 +3,50 @@ const router = express.Router();
 const knex = require('knex')(require('../../knexfile').development);
 
 // GET /businesses
+
 router.get('/', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const search = req.query.search || '';
+  const offset = (page - 1) * limit;
+
   try {
-    const businesses = await knex('businesses').select('*');
-    res.json(businesses);
+    const baseQuery = knex('businesses')
+      .where(builder => {
+        if (search) {
+          builder
+            .where('name', 'ilike', `%${search}%`)
+            .orWhere('owner', 'ilike', `%${search}%`);
+        }
+      });
+
+    const total = await baseQuery.clone().count('* as count').first();
+    const data = await baseQuery.clone().offset(offset).limit(limit).select('*');
+
+    res.json({
+      data,
+      total: parseInt(total.count),
+      page,
+      limit,
+      totalPages: Math.ceil(total.count / limit),
+    });
   } catch (err) {
     console.error('Error fetching businesses:', err);
     res.status(500).json({ error: 'Failed to fetch businesses' });
+  }
+});
+
+// get businesses by id just for testing purpose 
+router.get('/:id', async (req, res) => {
+  try {
+    const business = await knex('businesses').where({ id: req.params.id }).first();
+    if (!business) {
+      return res.status(404).json({ error: 'Business not found' });
+    }
+    res.json(business);
+  } catch (err) {
+    console.error('Error fetching business by ID:', err);
+    res.status(500).json({ error: 'Failed to fetch business' });
   }
 });
 
@@ -18,15 +55,104 @@ router.post('/', async (req, res) => {
   const { name, owner, email, phone, address } = req.body;
 
   try {
+    const existingBusiness = await knex('businesses').where({ name }).first();
+    if (existingBusiness) {
+      return res.status(400).json({ error: 'Business name already exists' });
+    }
+
     const [newBusiness] = await knex('businesses')
       .insert({ name, owner, email, phone, address })
       .returning('*');
 
     res.status(201).json(newBusiness);
   } catch (err) {
-    console.error('Error inserting business:', err);
+    console.error('Error creating business:', err);
     res.status(500).json({ error: 'Failed to create business' });
   }
 });
+
+
+
+
+// PUT /businesses/:id
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, owner, email, phone, address } = req.body;
+ 
+
+// Check if another business has the same name
+const existingBusiness = await knex('businesses')
+  .where({ name })
+  .andWhereNot({ id })
+  .first();
+
+if (existingBusiness) {
+  return res.status(400).json({ error: 'Business name already exists' });
+}
+
+  try {
+    const updated = await knex('businesses')
+      .where({ id })
+      .update({ name, owner, email, phone, address })
+      .returning('*');
+
+    if (updated.length === 0) {
+      return res.status(404).json({ error: 'Business not found' });
+    }
+
+    res.json(updated[0]);
+  } catch (err) {
+    console.error('Error updating business:', err);
+    res.status(500).json({ error: 'Failed to update business' });
+  }
+});
+
+// DELETE /businesses/:id
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleted = await knex('businesses').where({ id }).del();
+
+    if (deleted === 0) {
+      return res.status(404).json({ error: 'Business not found' });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    console.error('Error deleting business:', err);
+    res.status(500).json({ error: 'Failed to delete business' });
+  }
+});
+
+//file upload
+
+const upload = require('../middleware/upload');
+
+router.post('/:id/kyc', upload.single('kyc'), async (req, res) => {
+  const { id } = req.params;
+  const file = req.file;
+
+  if (!file) return res.status(400).json({ error: 'No file uploaded' });
+
+  try {
+    await knex('kyc_files').insert({
+      business_id: id,
+      filename: file.originalname,
+      filepath: file.path,
+      mimetype: file.mimetype,
+      size: file.size,
+    });
+
+    return res.status(201).json({ message: 'File uploaded successfully' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error saving file' });
+  }
+});
+
+
+
 
 module.exports = router;

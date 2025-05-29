@@ -1,30 +1,64 @@
+// tests/businesses.test.js
 const request = require('supertest');
-const app = require('../src/app');  // import app, not index
+const app = require('../src/app');
+const knex = require('knex')(require('../knexfile').development);
 
-describe('GET /businesses', () => {
-  it('should return status 200 and an array', async () => {
-    const res = await request(app).get('/businesses');
-    expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-  });
+let businessId;
+
+const testBusiness = {
+  name: '__TEST CORP__',
+  owner: 'Moulya',
+  email: 'testcorp@example.com',
+  phone: '1234567890',
+  address: 'Test Street, CA',
+};
+
+beforeAll(async () => {
+  await knex('businesses').where('name', testBusiness.name).del();
 });
 
-describe('POST /businesses', () => {
-  it('should create a new business and return it', async () => {
-    const newBusiness = {
-      name: 'Test Shop',
-      owner: 'Test Owner',
-      email: 'test@example.com',
-      phone: '1234567890',
-      address: '123 Test St'
-    };
+afterAll(async () => {
+  await knex('businesses').where('name', testBusiness.name).del();
+  await knex.destroy();
+});
 
-    const res = await request(app)
-      .post('/businesses')
-      .send(newBusiness);
-
+describe('Businesses API', () => {
+  test('POST /businesses should create a new business', async () => {
+    const res = await request(app).post('/businesses').send(testBusiness);
     expect(res.statusCode).toBe(201);
-    expect(res.body.name).toBe(newBusiness.name);
-    expect(res.body.owner).toBe(newBusiness.owner);
+    expect(res.body).toHaveProperty('id');
+    businessId = res.body.id;
+  });
+
+  test('GET /businesses/:id should fetch the created business', async () => {
+    const res = await request(app).get(`/businesses/${businessId}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.name).toBe(testBusiness.name);
+  });
+
+  test('PUT /businesses/:id should update the business', async () => {
+    const res = await request(app)
+      .put(`/businesses/${businessId}`)
+      .send({ ...testBusiness, name: 'Updated Corp' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.name).toBe('Updated Corp');
+  });
+
+test('GET /businesses with pagination and search', async () => {
+  const res = await request(app).get('/businesses?page=1&limit=5&search=corp');
+
+  console.log('Pagination response:', res.body);
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body.data).toBeInstanceOf(Array);
+  expect(
+    res.body.data.some((b) => b.name.toLowerCase().includes('corp'))
+  ).toBeTruthy();
+});
+
+
+  test('DELETE /businesses/:id should delete the business', async () => {
+    const res = await request(app).delete(`/businesses/${businessId}`);
+    expect([200, 204]).toContain(res.statusCode);
   });
 });

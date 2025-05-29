@@ -1,7 +1,29 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import Home from '../pages/index';
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve([]), // or your mock data here
+  })
+) as jest.Mock;
 
-test('renders heading', () => {
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    refresh: jest.fn(),
+    back: jest.fn(),
+    prefetch: jest.fn(),
+    beforePopState: jest.fn(),
+  }),
+}));
+
+
+
+
+
+test('renders heading', async () => {
   render(<Home />);
-  expect(screen.getByRole('heading', { name: /Hello OnePaySlip/i })).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByRole('heading', { name: /All Businesses/i })).toBeInTheDocument();
+  });
 });
