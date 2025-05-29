@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 interface Business {
@@ -20,18 +20,18 @@ export default function BusinessesPage() {
   const [total, setTotal] = useState(0);
   const router = useRouter();
 
-  const fetchBusinesses = async () => {
-    const res = await fetch(
-      `http://localhost:4000/businesses?page=${page}&limit=${limit}&search=${search}`
-    );
-    const data = await res.json();
-    setBusinesses(data.businesses || []);
-    setTotal(data.total || 0);
-  };
-
-  useEffect(() => {
-    fetchBusinesses();
-  }, [page, search]);
+ const fetchBusinesses = useCallback(async () => {
+  const res = await fetch(
+    `http://localhost:4000/businesses?page=${page}&limit=${limit}&search=${search}`
+  );
+  const data = await res.json();
+  setBusinesses(data.businesses || []);
+  setTotal(data.total || 0);
+}, [page, limit, search]);
+  
+ useEffect(() => {
+  fetchBusinesses();
+}, [fetchBusinesses]);
 
   const totalPages = Math.ceil(total / limit);
 
