@@ -1,11 +1,19 @@
 'use client';
-
+interface Business {
+  id: number;
+  name: string;
+  owner: string;
+  email: string;
+  phone: string;
+  address: string;
+}
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function BusinessListPage() {
-  const [businesses, setBusinesses] = useState<any[]>([]);
+ 
+   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const itemsPerPage = 4;
@@ -81,7 +89,7 @@ export default function BusinessListPage() {
           <p className="text-muted text-center">No businesses found.</p>
         ) : (
           <div className="row g-4">
-            {paginatedBusinesses.map((b: any) => (
+  {paginatedBusinesses.map((b: Business) => (
               <div className="col-12 col-md-6" key={b.id}>
                 <div className="card shadow-sm border border-primary-custom h-100">
                   <div className="card-body">
