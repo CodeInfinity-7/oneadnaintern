@@ -129,7 +129,7 @@ export default function NewBusinessPage() {
       } else {
         handleSuccess();
       }
-    } } catch {
+    } }catch (err) {
   setStatus('error');
   setErrorMsg('Something went wrong while submitting.');
 }
