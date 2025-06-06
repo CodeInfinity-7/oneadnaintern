@@ -52,7 +52,7 @@ export default function BusinessesPage() {
       }
 
       const json = await res.json();
-       console.log('Fetched businesses:', JSON.stringify(json.data, null, 2))
+       console.log('Fetched businesses:', JSON.stringify(json.data, null, 2));
       console.log('Fetched businesses:', json);
       setBusinesses(json.data || []);
       setTotal(json.total || 0);

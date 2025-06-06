@@ -14,6 +14,12 @@ interface Employee {
   business_id: number;
 }
 
+interface CsvError {
+  index: number;
+  row: Record<string, string>;
+  reason: string;
+}
+
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [page, setPage] = useState(1);
@@ -26,7 +32,7 @@ export default function EmployeesPage() {
 
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [csvPreview, setCsvPreview] = useState<Employee[]>([]);
-  const [csvErrors, setCsvErrors] = useState<any[]>([]);
+  const [csvErrors, setCsvErrors] = useState<CsvError[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchEmployees = useCallback(async () => {
@@ -69,8 +75,8 @@ export default function EmployeesPage() {
         setEmployees([]);
         setTotal(0);
       }
-    } catch (error) {
-      console.error('Failed to fetch employees:', error);
+    } catch {
+      console.error('Failed to fetch employees');
       setEmployees([]);
       setTotal(0);
     } finally {
@@ -114,7 +120,7 @@ export default function EmployeesPage() {
       } else {
         toast.error(data.error || 'Failed to delete employee');
       }
-    } catch (err) {
+    } catch {
       toast.error('Server error while deleting employee');
     }
   };
@@ -130,8 +136,8 @@ export default function EmployeesPage() {
         header: true,
         skipEmptyLines: true,
         complete: (result) => {
-          const parsed = result.data as any[];
-          const errors: any[] = [];
+          const parsed = result.data as Record<string, string>[];
+          const errors: CsvError[] = [];
 
           const validRows = parsed.filter((row, index) => {
             let reason = '';
@@ -147,7 +153,7 @@ export default function EmployeesPage() {
             return true;
           });
 
-          setCsvPreview(validRows);
+          setCsvPreview(validRows as Employee[]);
           setCsvErrors(errors);
         },
       });
@@ -187,7 +193,7 @@ export default function EmployeesPage() {
       } else {
         toast.error('Upload failed: ' + (data.error || 'Unknown error'));
       }
-    } catch (err) {
+    } catch {
       toast.error('Server error during upload');
     }
   };
