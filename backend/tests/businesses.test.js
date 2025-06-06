@@ -1,7 +1,9 @@
-// tests/businesses.test.js
 const request = require('supertest');
 const app = require('../src/app');
-const knex = require('knex')(require('../knexfile').development);
+const path = require('path');
+const knexConfig = require(path.resolve(__dirname, '../knexfile.js'));
+
+const knex = require('knex')(knexConfig.development);
 
 let businessId;
 
@@ -24,14 +26,19 @@ afterAll(async () => {
 
 describe('Businesses API', () => {
   test('POST /businesses should create a new business', async () => {
-    const res = await request(app).post('/businesses').send(testBusiness);
+    const res = await request(app)
+      .post('/businesses')
+      .set('x-skip-auth', 'true')
+      .send(testBusiness);
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty('id');
     businessId = res.body.id;
   });
 
   test('GET /businesses/:id should fetch the created business', async () => {
-    const res = await request(app).get(`/businesses/${businessId}`);
+    const res = await request(app)
+      .get(`/businesses/${businessId}`)
+      .set('x-skip-auth', 'true');
     expect(res.statusCode).toBe(200);
     expect(res.body.name).toBe(testBusiness.name);
   });
@@ -39,26 +46,30 @@ describe('Businesses API', () => {
   test('PUT /businesses/:id should update the business', async () => {
     const res = await request(app)
       .put(`/businesses/${businessId}`)
+      .set('x-skip-auth', 'true')
       .send({ ...testBusiness, name: 'Updated Corp' });
     expect(res.statusCode).toBe(200);
     expect(res.body.name).toBe('Updated Corp');
   });
 
-test('GET /businesses with pagination and search', async () => {
-  const res = await request(app).get('/businesses?page=1&limit=5&search=corp');
+  test('GET /businesses with pagination and search', async () => {
+    const res = await request(app)
+      .get('/businesses?page=1&limit=5&search=corp')
+      .set('x-skip-auth', 'true');
 
-  console.log('Pagination response:', res.body);
+    console.log('Pagination response:', res.body);
 
-  expect(res.statusCode).toBe(200);
-  expect(res.body.data).toBeInstanceOf(Array);
-  expect(
-    res.body.data.some((b) => b.name.toLowerCase().includes('corp'))
-  ).toBeTruthy();
-});
-
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data).toBeInstanceOf(Array);
+    expect(
+      res.body.data.some((b) => b.name.toLowerCase().includes('corp'))
+    ).toBeTruthy();
+  });
 
   test('DELETE /businesses/:id should delete the business', async () => {
-    const res = await request(app).delete(`/businesses/${businessId}`);
+    const res = await request(app)
+      .delete(`/businesses/${businessId}`)
+      .set('x-skip-auth', 'true');
     expect([200, 204]).toContain(res.statusCode);
   });
 });

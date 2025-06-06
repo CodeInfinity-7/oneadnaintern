@@ -1,28 +1,43 @@
-
-// src/app.js
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
+const YAML = require('yamljs');
+const swaggerUi = require('swagger-ui-express');
+require('dotenv').config();
+
 const app = express();
 
-// Enable CORS BEFORE any routes
+// CORS
 app.use(cors({
-  origin: 'http://localhost:3000', // your frontend's origin
+  origin: 'http://localhost:3000',
   credentials: true
 }));
 
+// Middleware
 app.use(express.json());
+const logRequests = require('./middleware/logger');
+app.use(logRequests);
 
-// Import the businesses route
+// Static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Routes
 const businessesRoute = require('./routes/businesses');
+const employeesRoute = require('./routes/employees');
+const authRoutes = require('./routes/auth');
 
-// Use the businesses route at /businesses
 app.use('/businesses', businessesRoute);
+app.use('/employees', employeesRoute);
+app.use('/auth', authRoutes);
+app.use('/salaries', require('./routes/salaries'));
 
+// Swagger setup (ONLY use this block)
+const swaggerDocument = YAML.load('./docs/swagger.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Test route
 app.get('/', (req, res) => {
   res.json({ message: 'Hello API' });
 });
-app.use('/uploads', express.static('uploads')); // serve uploaded files
-app.use('/businesses', businessesRoute);
-
 
 module.exports = app;

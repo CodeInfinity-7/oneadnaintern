@@ -1,0 +1,14 @@
+business_id,full_name,designation,mobile,email
+14,John Doe,Manager,9999976117,john@example.com
+15,Jane Smith,Developer,9999974042,jane@example.com
+16,Alice Johnson,Designer,9999916660,alice@example.com
+17,Bob Brown,QA Engineer,9999992719,bob@example.com
+18,Charlie Black,HR Executive,9999963238,charlie@example.com
+19,Diana White,Sales Lead,9999936716,diana@example.com
+21,Evan Gray,Marketing Head,9999929247,evan@example.com
+22,Fiona Blue,Product Owner,9999955286,fiona@example.com
+23,George Green,Support Agent,9999933045,george@example.com
+24,Hannah Yellow,Finance Officer,9999935965,hannah@example.com
+25,Ivan Orange,Business Analyst,9999957227,ivan@example.com
+26,Julia Red,DevOps Engineer,9999927536,julia@example.com
+28,Kevin Purple,Intern,9999947119,kevin@example.com

@@ -1,0 +1,262 @@
+openapi: 3.0.0
+info:
+  title: Full API - Employees & Businesses
+  version: 1.0.0
+  description: API for managing employees, businesses, and KYC uploads
+
+servers:
+  - url: http://localhost:4000
+
+paths:
+  /employees:
+    get:
+      summary: Get a list of employees
+      tags: [Employees]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        200:
+          description: List of employees
+    post:
+      summary: Create a new employee
+      tags: [Employees]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeInput'
+      responses:
+        201:
+          description: Employee created
+        400:
+          description: Validation error
+
+  /employees/bulk-upload:
+    post:
+      summary: Upload CSV to add multiple employees
+      tags: [Employees]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Employees uploaded
+        400:
+          description: Upload or validation failed
+
+  /employees/{id}:
+    get:
+      summary: Get an employee by ID
+      tags: [Employees]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Employee found
+        404:
+          description: Not found
+    put:
+      summary: Update an employee by ID
+      tags: [Employees]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeInput'
+      responses:
+        200:
+          description: Updated
+        400:
+          description: Validation error
+        404:
+          description: Not found
+    delete:
+      summary: Delete an employee by ID
+      tags: [Employees]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Deleted
+        404:
+          description: Not found
+
+  /businesses:
+    get:
+      summary: Get businesses with search & pagination
+      tags: [Businesses]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        200:
+          description: List of businesses
+    post:
+      summary: Create a new business
+      tags: [Businesses]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessInput'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Name already exists
+
+  /businesses/{id}:
+    get:
+      summary: Get business by ID
+      tags: [Businesses]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Business found
+        404:
+          description: Not found
+    put:
+      summary: Update business by ID
+      tags: [Businesses]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessInput'
+      responses:
+        200:
+          description: Updated
+        400:
+          description: Name already exists
+        404:
+          description: Not found
+    delete:
+      summary: Delete business by ID
+      tags: [Businesses]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Deleted
+        404:
+          description: Not found
+
+  /businesses/{id}/kyc:
+    post:
+      summary: Upload KYC file for a business
+      tags: [Businesses]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                kyc:
+                  type: string
+                  format: binary
+      responses:
+        201:
+          description: File uploaded
+        400:
+          description: No file uploaded
+
+components:
+  schemas:
+    EmployeeInput:
+      type: object
+      required: [full_name, designation, mobile, email, business_id]
+      properties:
+        full_name:
+          type: string
+        designation:
+          type: string
+        mobile:
+          type: string
+        email:
+          type: string
+          format: email
+        business_id:
+          type: integer
+
+    BusinessInput:
+      type: object
+      required: [name, owner, email, phone, address]
+      properties:
+        name:
+          type: string
+        owner:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string

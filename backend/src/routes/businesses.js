@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router(); 
 const knex = require('knex')(require('../../knexfile').development);
+const upload = require('../middleware/upload'); // KYC file upload middleware
 
-// GET /businesses
-
+// GET /businesses with optional search and pagination
 router.get('/', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -21,7 +21,18 @@ router.get('/', async (req, res) => {
       });
 
     const total = await baseQuery.clone().count('* as count').first();
-    const data = await baseQuery.clone().offset(offset).limit(limit).select('*');
+
+    const data = await baseQuery
+      .clone()
+      
+      .offset(offset)
+      .limit(limit)
+      .leftJoin('kyc_files', 'businesses.id', 'kyc_files.business_id')
+.groupBy('businesses.id')
+.select(
+  'businesses.*',
+  knex.raw("COALESCE(json_agg(kyc_files.filepath) FILTER (WHERE kyc_files.filepath IS NOT NULL), '[]') AS kycFiles")
+)
 
     res.json({
       data,
@@ -36,7 +47,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// get businesses by id just for testing purpose 
+// GET /businesses/:id (for testing)
 router.get('/:id', async (req, res) => {
   try {
     const business = await knex('businesses').where({ id: req.params.id }).first();
@@ -71,26 +82,21 @@ router.post('/', async (req, res) => {
   }
 });
 
-
-
-
 // PUT /businesses/:id
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { name, owner, email, phone, address } = req.body;
- 
-
-// Check if another business has the same name
-const existingBusiness = await knex('businesses')
-  .where({ name })
-  .andWhereNot({ id })
-  .first();
-
-if (existingBusiness) {
-  return res.status(400).json({ error: 'Business name already exists' });
-}
 
   try {
+    const existingBusiness = await knex('businesses')
+      .where({ name })
+      .andWhereNot({ id })
+      .first();
+
+    if (existingBusiness) {
+      return res.status(400).json({ error: 'Business name already exists' });
+    }
+
     const updated = await knex('businesses')
       .where({ id })
       .update({ name, owner, email, phone, address })
@@ -125,10 +131,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-//file upload
-
-const upload = require('../middleware/upload');
-
+// POST /businesses/:id/kyc - Upload KYC file
 router.post('/:id/kyc', upload.single('kyc'), async (req, res) => {
   const { id } = req.params;
   const file = req.file;
@@ -139,20 +142,16 @@ router.post('/:id/kyc', upload.single('kyc'), async (req, res) => {
     await knex('kyc_files').insert({
       business_id: id,
       filename: file.originalname,
-      filepath: file.path,
-      mimetype: file.mimetype,
+     filepath: `uploads/${file.filename}`,
+           mimetype: file.mimetype,
       size: file.size,
     });
 
     return res.status(201).json({ message: 'File uploaded successfully' });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error saving file' });
   }
 });
-
-
-
 
 module.exports = router;

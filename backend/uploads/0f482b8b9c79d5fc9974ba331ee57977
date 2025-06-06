@@ -1,0 +1,21 @@
+business_id,full_name,designation,mobile,email
+70,John Doe,Developer,9612548301,john.doe@example.com
+28,Jane Smith,Analyst,9424501910,jane.smith@example.com
+21,Bob Johnson,Support,9968693022,bob.johnson@example.com
+28,Alice Williams,Designer,9641882440,alice.williams@example.com
+70,Charlie Brown,Developer,9202791965,charlie.brown@example.com
+28,Eve Adams,Developer,9573073131,eve.adams@example.com
+23,Frank Lee,Analyst,9394261512,frank.lee@example.com
+19,Grace Kim,Support,9631065289,grace.kim@example.com
+25,Henry Ford,Developer,9907308472,henry.ford@example.com
+26,Ivy Chen,Manager,9737980301,ivy.chen@example.com
+26,Jack White,Sales,9549559377,jack.white@example.com
+24,Karen Black,HR,9630283427,karen.black@example.com
+21,Leo King,Analyst,9705672438,leo.king@example.com
+15,Mona Ray,Designer,9538286734,mona.ray@example.com
+23,Nick Park,Sales,9279056983,nick.park@example.com
+14,Olivia Lin,Analyst,9492752174,olivia.lin@example.com
+26,Paul Green,Developer,9146964014,paul.green@example.com
+25,Queen Bee,HR,9425100408,queen.bee@example.com
+14,Rick Stone,Sales,9775386316,rick.stone@example.com
+25,Sara Fox,Sales,9742208123,sara.fox@example.com

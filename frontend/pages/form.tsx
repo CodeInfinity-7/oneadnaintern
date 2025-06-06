@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-
+import { toast } from 'react-toastify';
 export default function NewBusinessPage() {
   const router = useRouter();
 
@@ -32,12 +32,14 @@ export default function NewBusinessPage() {
 
     const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
     if (!validTypes.includes(selected.type)) {
-      alert('Only PDF, JPG, or PNG files are allowed');
+      toast.error('Only PDF, JPG, or PNG files are allowed');
+
+
       return;
     }
 
     if (selected.size > 5 * 1024 * 1024) {
-      alert('File size should be less than 5MB');
+      toast.error('File size should be less than 5MB');
       return;
     }
 
@@ -91,7 +93,8 @@ export default function NewBusinessPage() {
         if (data.error?.toLowerCase().includes('name')) {
           setErrors({ name: data.error });
         } else {
-          setErrorMsg(data?.error || 'Failed to create business.');
+          toast.error(data?.error || 'Failed to create business.');
+
         }
         return;
       }
@@ -131,7 +134,8 @@ export default function NewBusinessPage() {
       }
     } catch (err) {
   setStatus('error');
-  setErrorMsg('Something went wrong while submitting.');
+ toast.error('Something went wrong while submitting.');
+
 }
 
   };
@@ -142,6 +146,8 @@ export default function NewBusinessPage() {
     setKycFile(null);
     setProgress(0);
     setTimeout(() => router.push('/'), 1500);
+    toast.success('Business created successfully!');
+
   };
 
   return (
@@ -208,12 +214,7 @@ export default function NewBusinessPage() {
           Submit
         </button>
 
-        {status === 'success' && (
-          <div className="alert alert-success mt-4 mb-0 text-center">Business created successfully!</div>
-        )}
-        {status === 'error' && !Object.keys(errors).length && (
-          <div className="alert alert-danger mt-4 mb-0 text-center">{errorMsg || 'Something went wrong.'}</div>
-        )}
+      
       </form>
     </div>
   );
