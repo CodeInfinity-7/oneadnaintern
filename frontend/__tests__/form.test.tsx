@@ -2,9 +2,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import NewBusinessPage from '../pages/form';
 
+// ✅ Mock fetch globally
 global.fetch = jest.fn();
-import { useRouter } from 'next/router';
 
+// ✅ Mock next/router
 jest.mock('next/router', () => ({
   useRouter() {
     return {
@@ -23,6 +24,15 @@ jest.mock('next/router', () => ({
   },
 }));
 
+// ✅ Mock react-toastify
+jest.mock('react-toastify', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+}));
+
+import { toast } from 'react-toastify';
 
 describe('NewBusinessPage - Validation Scenarios', () => {
   beforeEach(() => {
@@ -47,7 +57,7 @@ describe('NewBusinessPage - Validation Scenarios', () => {
     });
 
     render(<NewBusinessPage />);
-    
+
     fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Acme' } });
     fireEvent.change(screen.getByLabelText(/owner/i), { target: { value: 'John' } });
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'john@example.com' } });
@@ -78,7 +88,7 @@ describe('NewBusinessPage - Validation Scenarios', () => {
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/business created successfully/i)).toBeInTheDocument();
+      expect(toast.success).toHaveBeenCalledWith('Business created successfully!');
     });
   });
 });
