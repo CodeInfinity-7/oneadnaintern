@@ -39,7 +39,7 @@ export default function AddEmployee() {
 
     // Check if business_id exists
     try {
-      const businessRes = await fetch(`http://localhost:4000/businesses/${businessId}`);
+      const businessRes = await fetch(`/api/businesses/${businessId}`);
       if (!businessRes.ok) {
          toast.error('Business ID does not exist');
         return;
@@ -51,7 +51,7 @@ export default function AddEmployee() {
 
     // Proceed to submit employee
     try {
-      const res = await fetch('http://localhost:4000/employees', {
+      const res = await fetch('/api/employees', {
         method: 'POST',
         headers: { 
     'Content-Type': 'application/json',
