@@ -1,9 +1,7 @@
 // routes/salaries.js
 const express = require('express');
 const router = express.Router();
-const path = require('path');
-const knexConfig = require(path.resolve(__dirname, '../../knexfile.js'));
-const knex = require('knex')(knexConfig.development);
+const knex = require("../db");
 const authenticateToken = require('../middleware/auth');
 
 // Calculate Salary (POST /salaries/calculate)
