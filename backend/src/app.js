@@ -31,7 +31,9 @@ app.use('/auth', authRoutes);
 app.use('/salaries', require('./routes/salaries'));
 
 // Swagger setup (ONLY use this block)
-const swaggerDocument = YAML.load('./docs/swagger.yaml');
+const swaggerDocument = YAML.load(
+  path.join(__dirname, "../docs/swagger.yaml")
+);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Test route
