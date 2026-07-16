@@ -48,10 +48,10 @@ export default function EmployeesPage() {
         queryParams.append('search', search.trim());
       }
 
-      const endpoint = businessId
-        ? `http://localhost:4000/employees/business/${businessId}`
-        : `http://localhost:4000/employees?${queryParams.toString()}`;
-
+     const endpoint = businessId
+  ? `/api/employees/business/${businessId}`
+  : `/api/employees?${queryParams.toString()}`;
+      
       const res = await fetch(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -105,7 +105,7 @@ export default function EmployeesPage() {
     try {
       const token = localStorage.getItem('token');
 
-      const res = await fetch(`http://localhost:4000/employees/${id}`, {
+      const res = await fetch(`/api/employees/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -173,7 +173,7 @@ export default function EmployeesPage() {
     try {
       const token = localStorage.getItem('token');
 
-      const res = await fetch('http://localhost:4000/employees/bulk-upload', {
+      const res = await fetch('/api/employees/bulk-upload', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
