@@ -153,7 +153,7 @@ export default function EmployeesPage() {
             return true;
           });
 
-          setCsvPreview(validRows as Employee[]);
+          setCsvPreview(validRows as unknown as Employee[]);
           setCsvErrors(errors);
         },
       });
