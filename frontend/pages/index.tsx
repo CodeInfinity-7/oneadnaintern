@@ -20,23 +20,29 @@ export default function BusinessListPage() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    fetch('http://localhost:4000/businesses')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setBusinesses(data);
-        } else if (Array.isArray(data.data)) {
-          setBusinesses(data.data);
-        } else {
-          setBusinesses([]);
-        }
-      })
-      .catch((err) => {
-        console.error('Fetch error:', err);
+ useEffect(() => {
+  const token = localStorage.getItem('token');
+
+  fetch('/api/businesses', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (Array.isArray(data)) {
+        setBusinesses(data);
+      } else if (Array.isArray(data.data)) {
+        setBusinesses(data.data);
+      } else {
         setBusinesses([]);
-      });
-  }, []);
+      }
+    })
+    .catch((err) => {
+      console.error('Fetch error:', err);
+      setBusinesses([]);
+    });
+}, []);
 
   useEffect(() => {
     setPage(1);
