@@ -36,7 +36,7 @@ export default function BusinessesPage() {
 
     try {
       const res = await fetch(
-        `http://localhost:4000/businesses?page=${page}&limit=${limit}&search=${search}`,
+  `/api/businesses?page=${page}&limit=${limit}&search=${search}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -144,11 +144,11 @@ export default function BusinessesPage() {
         </p>
       <div className="d-flex flex-wrap gap-2 mt-3">
 
-  {b.kycfiles && b.kycfiles.length > 0 ? (
-  b.kycfiles.map((file, idx) => (
+  {b.kycFiles && b.kycFiles.length > 0 ? (
+  b.kycFiles.map((file, idx) => (
     <a
       key={idx}
-      href={`http://localhost:4000/${file}`}
+      href={`https://oneadnaintern.onrender.com/${file}`}
       target="_blank"
       rel="noopener noreferrer"
       className="btn btn-sm btn-outline-success"
