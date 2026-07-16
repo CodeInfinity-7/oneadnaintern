@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
@@ -9,13 +11,19 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch('http://localhost:4000/auth/login', {
+      const res = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
       });
 
       const data = await res.json();
+
       if (res.ok) {
         localStorage.setItem('token', data.token);
         toast.success('Login successful!');
@@ -24,6 +32,7 @@ export default function LoginPage() {
         toast.error(data.message || 'Invalid username or password.');
       }
     } catch (error) {
+      console.error(error);
       toast.error('Network error. Please try again.');
     }
   };
@@ -32,26 +41,34 @@ export default function LoginPage() {
     <div style={styles.page}>
       <div style={styles.card}>
         <h2 style={styles.title}>OnePaySlip Login</h2>
-        <p style={styles.subtitle}>Please enter your credentials to continue.</p>
+        <p style={styles.subtitle}>
+          Please enter your credentials to continue.
+        </p>
+
         <input
           type="text"
           placeholder="Username"
           value={username}
-          onChange={e => setUsername(e.target.value)}
+          onChange={(e) => setUsername(e.target.value)}
           style={styles.input}
         />
+
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
         />
+
         <button onClick={handleLogin} style={styles.button}>
           Login
         </button>
+
         <div style={styles.forgot}>
-          <a href="#" style={styles.forgotLink}>Forgot Password?</a>
+          <a href="#" style={styles.forgotLink}>
+            Forgot Password?
+          </a>
         </div>
       </div>
     </div>
@@ -64,7 +81,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    background: 'linear-gradient(135deg, #6e4aff, #845ef7)', // nice purple gradient
+    background: 'linear-gradient(135deg, #6e4aff, #845ef7)',
     padding: '20px',
   },
   card: {
@@ -74,8 +91,8 @@ const styles = {
     padding: '40px 30px',
     maxWidth: '400px',
     width: '100%',
-    boxSizing: 'border-box',
-    textAlign: 'center',
+    boxSizing: 'border-box' as const,
+    textAlign: 'center' as const,
   },
   title: {
     marginBottom: '10px',
@@ -96,7 +113,6 @@ const styles = {
     border: '1.5px solid #ddd',
     fontSize: '16px',
     outline: 'none',
-    transition: 'border-color 0.3s',
   },
   button: {
     width: '100%',
@@ -109,7 +125,6 @@ const styles = {
     borderRadius: '10px',
     cursor: 'pointer',
     boxShadow: '0 6px 20px rgba(90, 60, 255, 0.4)',
-    transition: 'background-color 0.3s ease',
   },
   forgot: {
     marginTop: '20px',
