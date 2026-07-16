@@ -32,51 +32,54 @@ export default function AddEmployee() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError('');
-    const token = localStorage.getItem('token'); // or wherever you store it
-    if (!validate()) return;
+  e.preventDefault();
+  setFormError('');
 
-    // Check if business_id exists
-    try {
-      const businessRes = await fetch(`/api/businesses/${businessId}`);
-      if (!businessRes.ok) {
-         toast.error('Business ID does not exist');
-        return;
-      }
-    } catch (err) {
-      toast.error('Error checking business ID');
+  const token = localStorage.getItem('token');
+
+  if (!validate()) return;
+
+  // Check if business_id exists
+  try {
+    const businessRes = await fetch(`/api/businesses/${businessId}`);
+
+    if (!businessRes.ok) {
+      toast.error('Business ID does not exist');
       return;
     }
+  } catch {
+    toast.error('Error checking business ID');
+    return;
+  }
 
-    // Proceed to submit employee
-    try {
-      const res = await fetch('/api/employees', {
-        method: 'POST',
-        headers: { 
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`, // <-- Add this
-  },
-        body: JSON.stringify({
-          business_id: parseInt(businessId),
-          full_name: fullName,
-          designation,
-          mobile,
-          email,
-        }),
-      });
+  // Proceed to submit employee
+  try {
+    const res = await fetch('/api/employees', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        business_id: parseInt(businessId, 10),
+        full_name: fullName,
+        designation,
+        mobile,
+        email,
+      }),
+    });
 
-      if (res.ok) {
-        toast.success('Employee added successfully!');
-        setTimeout(() => router.push('/employees'), 1500);
-      } else {
-        const data = await res.json();
-        toast.error(data.error || 'Failed to add employee');
-      }
-    } catch (err) {
-      toast.error('Server error');
+    if (res.ok) {
+      toast.success('Employee added successfully!');
+      setTimeout(() => router.push('/employees'), 1500);
+    } else {
+      const data = await res.json();
+      toast.error(data.error || 'Failed to add employee');
     }
-  };
+  } catch {
+    toast.error('Server error');
+  }
+};
 
   return (
     <div className="container py-5">
