@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router(); 
-const knex = require('knex')(require('../../knexfile').development);
+const knex = require("../db");
 const upload = require('../middleware/upload'); // KYC file upload middleware
 
 // GET /businesses with optional search and pagination
