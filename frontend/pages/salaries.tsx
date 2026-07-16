@@ -23,12 +23,13 @@ export default function SalaryCalculationPage() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+
     if (!token) {
       toast.error('Unauthorized. Please log in.');
       return;
     }
 
-    fetch('http://localhost:4000/employees', {
+    fetch('/api/employees', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -38,26 +39,34 @@ export default function SalaryCalculationPage() {
         return res.json();
       })
       .then((data) => {
-        setEmployees(data.employees);
+        setEmployees(data.employees || []);
       })
-      .catch(() => setFetchError('Failed to load employees'));
+      .catch(() => {
+        setFetchError('Failed to load employees');
+      });
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const calculateSalary = async () => {
     setTotal(null);
 
     const token = localStorage.getItem('token');
+
     if (!token) {
       toast.error('Unauthorized. Please log in.');
       return;
     }
 
     try {
-      const res = await fetch('http://localhost:4000/salaries/calculate', {
+      const res = await fetch('/api/salaries/calculate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,24 +83,26 @@ export default function SalaryCalculationPage() {
 
       if (res.ok) {
         setTotal(data.total_amount);
-        toast.success('✅ Salary calculated!');
+        toast.success('Salary calculated!');
       } else {
-        toast.error(data.error || '❌ Calculation failed');
+        toast.error(data.error || 'Calculation failed');
       }
-    } catch (err) {
-      toast.error('❌ Server error');
+    } catch (error) {
+      console.error(error);
+      toast.error('Server error');
     }
   };
 
   const saveSalary = async () => {
     const token = localStorage.getItem('token');
+
     if (!token) {
       toast.error('Unauthorized. Please log in.');
       return;
     }
 
     try {
-      const res = await fetch('http://localhost:4000/salaries', {
+      const res = await fetch('/api/salaries', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,12 +119,13 @@ export default function SalaryCalculationPage() {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success('✅ Salary saved successfully!');
+        toast.success('Salary saved successfully!');
       } else {
-        toast.error(data.error || '❌ Failed to save');
+        toast.error(data.error || 'Failed to save');
       }
-    } catch (err) {
-      toast.error('❌ Server error');
+    } catch (error) {
+      console.error(error);
+      toast.error('Server error');
     }
   };
 
@@ -121,11 +133,17 @@ export default function SalaryCalculationPage() {
     <div className="container py-5">
       <h2 className="mb-4">Salary Entry</h2>
 
-      {fetchError && <p className="text-danger">{fetchError}</p>}
+      {fetchError && (
+        <p className="text-danger">{fetchError}</p>
+      )}
 
-      <form onSubmit={(e) => e.preventDefault()} className="row g-3">
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="row g-3"
+      >
         <div className="col-md-6">
           <label className="form-label">Employee</label>
+
           <select
             name="employee_id"
             className="form-select"
@@ -134,6 +152,7 @@ export default function SalaryCalculationPage() {
             required
           >
             <option value="">Select an employee</option>
+
             {employees.map((emp) => (
               <option key={emp.id} value={emp.id}>
                 {emp.full_name}
@@ -144,6 +163,7 @@ export default function SalaryCalculationPage() {
 
         <div className="col-md-6">
           <label className="form-label">Base Salary</label>
+
           <input
             type="number"
             name="base_salary"
@@ -156,6 +176,7 @@ export default function SalaryCalculationPage() {
 
         <div className="col-md-6">
           <label className="form-label">Bonus</label>
+
           <input
             type="number"
             name="bonus"
@@ -167,6 +188,7 @@ export default function SalaryCalculationPage() {
 
         <div className="col-md-6">
           <label className="form-label">Deductions</label>
+
           <input
             type="number"
             name="deductions"
@@ -177,13 +199,21 @@ export default function SalaryCalculationPage() {
         </div>
 
         <div className="col-md-6 d-grid gap-2">
-          <button type="button" className="btn btn-primary" onClick={calculateSalary}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={calculateSalary}
+          >
             Calculate Salary
           </button>
         </div>
 
         <div className="col-md-6 d-grid gap-2">
-          <button type="button" className="btn btn-success" onClick={saveSalary}>
+          <button
+            type="button"
+            className="btn btn-success"
+            onClick={saveSalary}
+          >
             Save Salary Entry
           </button>
         </div>
@@ -195,9 +225,7 @@ export default function SalaryCalculationPage() {
         </div>
       )}
 
-    
-
-
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }
