@@ -8,18 +8,29 @@ export default function SignupPage() {
   const router = useRouter();
 
   const handleSignup = async () => {
-    const res = await fetch('http://localhost:4000/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
 
-    if (res.ok) {
-       toast.success('Signup successful! Please login.');
-      router.push('/login');
-    } else {
       const data = await res.json();
-      toast.error(data.message || 'Signup failed');
+
+      if (res.ok) {
+        toast.success('Signup successful! Please login.');
+        router.push('/login');
+      } else {
+        toast.error(data.message || 'Signup failed');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Network error. Please try again.');
     }
   };
 
@@ -28,20 +39,23 @@ export default function SignupPage() {
       <div style={styles.card}>
         <h2 style={styles.title}>Sign Up</h2>
         <p style={styles.subtitle}>Create your new account</p>
+
         <input
           type="text"
           placeholder="Username"
           value={username}
-          onChange={e => setUsername(e.target.value)}
+          onChange={(e) => setUsername(e.target.value)}
           style={styles.input}
         />
+
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
         />
+
         <button onClick={handleSignup} style={styles.button}>
           Register
         </button>
@@ -56,7 +70,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    background: 'linear-gradient(135deg, #6e4aff, #845ef7)', // purple gradient
+    background: 'linear-gradient(135deg, #6e4aff, #845ef7)',
     padding: '20px',
   },
   card: {
@@ -66,8 +80,8 @@ const styles = {
     padding: '40px 30px',
     maxWidth: '400px',
     width: '100%',
-    boxSizing: 'border-box',
-    textAlign: 'center',
+    boxSizing: 'border-box' as const,
+    textAlign: 'center' as const,
   },
   title: {
     marginBottom: '10px',
