@@ -28,7 +28,7 @@ export default function EditEmployeePage() {
       return; // stop further execution
     }
 
-    fetch(`http://localhost:4000/employees/${id}`, {
+     fetch(`/api/employees/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -63,7 +63,7 @@ export default function EditEmployeePage() {
 
     const token = localStorage.getItem('token');
 
-    const res = await fetch(`http://localhost:4000/employees/${id}`, {
+    const res = await fetch(`/api/employees/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
