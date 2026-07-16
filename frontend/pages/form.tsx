@@ -78,11 +78,16 @@ export default function NewBusinessPage() {
 
     try {
       // Step 1: Create Business
-      const res = await fetch('http://localhost:4000/businesses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
+     const token = localStorage.getItem('token');
+
+const res = await fetch('/api/businesses', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify(form),
+});
 
       const data = await res.json();
 
@@ -105,7 +110,11 @@ export default function NewBusinessPage() {
         kycForm.append('kyc', kycFile);
 
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', `http://localhost:4000/businesses/${data.id}/kyc`, true);
+       
+
+xhr.open('POST', `/api/businesses/${data.id}/kyc`, true);
+
+xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
         xhr.upload.onprogress = (event) => {
           if (event.lengthComputable) {
@@ -116,8 +125,8 @@ export default function NewBusinessPage() {
 
         xhr.onload = () => {
           if (xhr.status === 201) {
-            setStatus('success');
-          } else {
+    handleSuccess();
+} else {
             setStatus('error');
             setErrorMsg('KYC upload failed.');
           }
