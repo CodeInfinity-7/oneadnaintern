@@ -33,49 +33,55 @@ export default function KYCUploadPage() {
     setMessage('');
   };
 
-  const handleUpload = async () => {
-    if (!file || !id) {
-      setMessage('File or Business ID is missing.');
-      return;
+ const handleUpload = async () => {
+  if (!file || !id) {
+    setMessage('File or Business ID is missing.');
+    return;
+  }
+
+  setUploading(true);
+  setProgress(0);
+  setMessage('');
+  setError('');
+
+  const token = localStorage.getItem('token');
+
+  const formData = new FormData();
+  formData.append('kyc', file);
+
+  const xhr = new XMLHttpRequest();
+
+  xhr.open('POST', `/api/businesses/${id}/kyc`, true);
+
+  xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+  xhr.upload.onprogress = (event) => {
+    if (event.lengthComputable) {
+      const percent = Math.round((event.loaded * 100) / event.total);
+      setProgress(percent);
     }
-
-    setUploading(true);
-    setProgress(0);
-    setMessage('');
-    setError('');
-
-    const formData = new FormData();
-    formData.append('kyc', file);
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', `http://localhost:4000/businesses/${id}/kyc`, true);
-
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percent = Math.round((event.loaded * 100) / event.total);
-        setProgress(percent);
-      }
-    };
-
-    xhr.onload = () => {
-      setUploading(false);
-      if (xhr.status === 201) {
-        setMessage('File uploaded successfully!');
-        setFile(null);
-        setProgress(0);
-      } else {
-        const res = JSON.parse(xhr.responseText);
-        setError(res?.error || 'Failed to upload file.');
-      }
-    };
-
-    xhr.onerror = () => {
-      setUploading(false);
-      setError('Upload failed due to network error.');
-    };
-
-    xhr.send(formData);
   };
+
+  xhr.onload = () => {
+    setUploading(false);
+
+    if (xhr.status === 201) {
+      setMessage('File uploaded successfully!');
+      setFile(null);
+      setProgress(0);
+    } else {
+      const res = JSON.parse(xhr.responseText);
+      setError(res?.error || 'Failed to upload file.');
+    }
+  };
+
+  xhr.onerror = () => {
+    setUploading(false);
+    setError('Upload failed due to network error.');
+  };
+
+  xhr.send(formData);
+};
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
