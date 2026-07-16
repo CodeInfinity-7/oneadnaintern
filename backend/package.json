@@ -9,8 +9,8 @@
     "lint:fix": "eslint . --ext .js --fix",
     "dev": "nodemon src/index.js",
     
-  "test": "cross-env NODE_ENV=test jest"
-
+  "test": "cross-env NODE_ENV=test jest",
+"migrate": "knex migrate:latest"
 
   },
   "keywords": [],
