@@ -6,10 +6,10 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface Payslip {
-  id: number;
+  id?: number;
   pdf_url: string;
   qr_code: string;
-  created_at: string;
+  salary_date: string;
 }
 
 const PayslipHistory = () => {
