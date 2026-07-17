@@ -29,12 +29,14 @@ const businessesRoute = require("./routes/businesses");
 const employeesRoute = require("./routes/employees");
 const authRoutes = require("./routes/auth");
 const payslipRoutes = require("./routes/payslip");
+const reportsRoutes = require("./routes/reports");
 
 app.use("/businesses", businessesRoute);
 app.use("/employees", employeesRoute);
 app.use("/auth", authRoutes);
 app.use("/salaries", require("./routes/salaries"));
 app.use("/payslips", payslipRoutes);
+app.use("/reports", reportsRoutes);
 
 // Swagger
 const swaggerDocument = YAML.load(
