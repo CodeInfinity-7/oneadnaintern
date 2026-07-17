@@ -7,22 +7,24 @@ interface Employee {
   email?: string;
 }
 
-export default function PayslipTable({
-  employees,
-  salaryEntries,
-  searchTerm,
-  setSearchTerm,
-  generatingPDF,
-  handleGeneratePDF,
-}: {
-  employees: Employee[];
-  salaryEntries: number[];
-  searchTerm: string;
+interface PayslipTableProps {
+  employees?: Employee[];
+  salaryEntries?: number[];
+  searchTerm?: string;
   setSearchTerm: (value: string) => void;
   generatingPDF: number | null;
   handleGeneratePDF: (id: number) => void;
-}) {
-  const filtered = employees.filter((emp) =>
+}
+
+export default function PayslipTable({
+  employees = [],
+  salaryEntries = [],
+  searchTerm = '',
+  setSearchTerm,
+  generatingPDF,
+  handleGeneratePDF,
+}: PayslipTableProps) {
+  const filtered = (employees ?? []).filter((emp) =>
     `${emp.full_name} ${emp.designation ?? ''} ${emp.email ?? ''}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
@@ -55,6 +57,7 @@ export default function PayslipTable({
               <th>Action</th>
             </tr>
           </thead>
+
           <tbody>
             {filtered.map((emp, index) => (
               <tr key={emp.id}>
@@ -62,22 +65,27 @@ export default function PayslipTable({
                 <td>{emp.full_name}</td>
                 <td>{emp.designation || '—'}</td>
                 <td>{emp.email || '—'}</td>
+
                 <td className="d-flex flex-column gap-2">
-                  {salaryEntries.includes(emp.id) ? (
+                  {(salaryEntries ?? []).includes(emp.id) ? (
                     <>
                       <button
                         className="btn btn-sm btn-primary"
                         onClick={() => handleGeneratePDF(emp.id)}
                         disabled={generatingPDF === emp.id}
                       >
-                        {generatingPDF === emp.id ? 'Generating...' : 'Generate PDF'}
+                        {generatingPDF === emp.id
+                          ? 'Generating...'
+                          : 'Generate PDF'}
                       </button>
+
                       <a
                         href={`/paysliphistory?employee_id=${emp.id}`}
                         className="btn btn-sm btn-outline-secondary"
                       >
                         View History
                       </a>
+
                       <a
                         href={`/api/payslips/latest?employee_id=${emp.id}`}
                         target="_blank"
@@ -88,7 +96,9 @@ export default function PayslipTable({
                       </a>
                     </>
                   ) : (
-                    <span className="text-danger">You have to add salary</span>
+                    <span className="text-danger">
+                      You have to add salary
+                    </span>
                   )}
                 </td>
               </tr>
