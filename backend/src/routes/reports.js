@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const knex = require('knex')(require('../../knexfile').development);
+const knex = require('knex')(require('../../knexfile').production);
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 
