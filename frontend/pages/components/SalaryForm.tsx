@@ -20,7 +20,7 @@ interface SalaryFormProps {
   errors?: Record<string, string>;
   isCalculating: boolean;
   isSaving: boolean;
-  total: number | null;
+  total?: number | null;
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
@@ -136,11 +136,11 @@ export default function SalaryForm({
         </div>
       </form>
 
-      {total !== null && (
-        <div className="alert alert-info mt-4 text-center">
-          <strong>Total Salary: ₹{total.toFixed(2)}</strong>
-        </div>
-      )}
+      {typeof total === 'number' && (
+  <div className="alert alert-info mt-4 text-center">
+    <strong>Total Salary: ₹{total.toFixed(2)}</strong>
+  </div>
+)}
     </>
   );
 }
