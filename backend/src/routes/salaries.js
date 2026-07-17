@@ -61,5 +61,17 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch salaries' });
   }
 });
+// Get all salary entries
+router.get('/all', authenticateToken, async (req, res) => {
+  try {
+    const salaries = await knex('salary_entries')
+      .select('*')
+      .orderBy('created_at', 'desc');
 
+    res.json(salaries);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch salary entries' });
+  }
+});
 module.exports = router;
