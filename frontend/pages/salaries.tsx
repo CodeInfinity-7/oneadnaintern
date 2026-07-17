@@ -234,7 +234,7 @@ export default function SalariesPage() {
     setSummary(null);
 
     try {
-      const [year, monthValue] = month.split("-");
+     const [year, monthValue] = month.split('-');
 
 const res = await fetch(
   `/api/reports/summary?business_id=${businessId}&month=${monthValue}&year=${year}`,
