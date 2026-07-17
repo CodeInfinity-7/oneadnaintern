@@ -15,9 +15,9 @@ interface FormData {
 }
 
 interface SalaryFormProps {
-  employees: Employee[];
-  formData: FormData;
-  errors: Record<string, string>;
+  employees?: Employee[];
+  formData?: FormData;
+  errors?: Record<string, string>;
   isCalculating: boolean;
   isSaving: boolean;
   total: number | null;
@@ -29,9 +29,14 @@ interface SalaryFormProps {
 }
 
 export default function SalaryForm({
-  employees,
-  formData,
-  errors,
+  employees = [],
+  formData = {
+    employee_id: '',
+    base_salary: '',
+    bonus: '',
+    deductions: '',
+  },
+  errors = {},
   isCalculating,
   isSaving,
   total,
@@ -44,12 +49,11 @@ export default function SalaryForm({
       <form className="row g-3" onSubmit={(e) => e.preventDefault()}>
         <div className="col-md-6">
           <label className="form-label">Employee</label>
+
           <select
             name="employee_id"
-            className={`form-select ${
-              errors.employee_id ? 'is-invalid' : ''
-            }`}
-            value={formData.employee_id}
+            className={`form-select ${errors.employee_id ? 'is-invalid' : ''}`}
+            value={formData.employee_id ?? ''}
             onChange={handleChange}
           >
             <option value="">Select</option>
@@ -61,9 +65,7 @@ export default function SalaryForm({
             ))}
           </select>
 
-          <div className="invalid-feedback">
-            {errors.employee_id}
-          </div>
+          <div className="invalid-feedback">{errors.employee_id}</div>
         </div>
 
         <div className="col-md-6">
@@ -72,17 +74,13 @@ export default function SalaryForm({
           <input
             type="number"
             name="base_salary"
-            className={`form-control ${
-              errors.base_salary ? 'is-invalid' : ''
-            }`}
-            value={formData.base_salary}
+            className={`form-control ${errors.base_salary ? 'is-invalid' : ''}`}
+            value={formData.base_salary ?? ''}
             onChange={handleChange}
             min="0"
           />
 
-          <div className="invalid-feedback">
-            {errors.base_salary}
-          </div>
+          <div className="invalid-feedback">{errors.base_salary}</div>
         </div>
 
         <div className="col-md-6">
@@ -91,17 +89,13 @@ export default function SalaryForm({
           <input
             type="number"
             name="bonus"
-            className={`form-control ${
-              errors.bonus ? 'is-invalid' : ''
-            }`}
-            value={formData.bonus}
+            className={`form-control ${errors.bonus ? 'is-invalid' : ''}`}
+            value={formData.bonus ?? ''}
             onChange={handleChange}
             min="0"
           />
 
-          <div className="invalid-feedback">
-            {errors.bonus}
-          </div>
+          <div className="invalid-feedback">{errors.bonus}</div>
         </div>
 
         <div className="col-md-6">
@@ -110,17 +104,13 @@ export default function SalaryForm({
           <input
             type="number"
             name="deductions"
-            className={`form-control ${
-              errors.deductions ? 'is-invalid' : ''
-            }`}
-            value={formData.deductions}
+            className={`form-control ${errors.deductions ? 'is-invalid' : ''}`}
+            value={formData.deductions ?? ''}
             onChange={handleChange}
             min="0"
           />
 
-          <div className="invalid-feedback">
-            {errors.deductions}
-          </div>
+          <div className="invalid-feedback">{errors.deductions}</div>
         </div>
 
         <div className="col-md-6 d-grid">
@@ -130,9 +120,7 @@ export default function SalaryForm({
             onClick={calculateSalary}
             disabled={isCalculating}
           >
-            {isCalculating
-              ? 'Calculating...'
-              : 'Calculate Salary'}
+            {isCalculating ? 'Calculating...' : 'Calculate Salary'}
           </button>
         </div>
 
@@ -143,9 +131,7 @@ export default function SalaryForm({
             onClick={saveSalary}
             disabled={isSaving}
           >
-            {isSaving
-              ? 'Saving...'
-              : 'Save Salary Entry'}
+            {isSaving ? 'Saving...' : 'Save Salary Entry'}
           </button>
         </div>
       </form>
