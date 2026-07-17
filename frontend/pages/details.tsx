@@ -75,51 +75,57 @@ const res = await fetch(`/api/reports/details?${query}`, {
   };
 
   useEffect(() => {
-    if (hasFetchedOnce) fetchReport();
-  }, [page]);
+  if (hasFetchedOnce) {
+    fetchReport();
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [page, hasFetchedOnce]);
 
-  const handleExport = async (type: 'pdf' | 'excel') => {
-    try {
-      const query = new URLSearchParams({
-        business_id: businessId,
-        start_date: startDate,
-        end_date: endDate,
-        type,
-      });
+ const handleExport = async (type: 'pdf' | 'excel') => {
+  try {
+    const token = localStorage.getItem('token');
 
-     const res = await fetch(`/api/reports/export?${query}`, {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-});
-      if (!res.ok) throw new Error(`Export failed: ${res.status}`);
+    const query = new URLSearchParams({
+      business_id: businessId,
+      start_date: startDate,
+      end_date: endDate,
+      type,
+    });
 
-      const blob = await res.blob();
-      const disposition = res.headers.get('Content-Disposition');
-      let filename = `payroll_report.${type === 'pdf' ? 'pdf' : 'xlsx'}`;
+    const res = await fetch(`/api/reports/export?${query}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      if (disposition) {
-        const match = disposition.match(/filename="?([^";]+)"?/);
-        if (match?.[1]) {
-          filename = match[1];
-        }
+    if (!res.ok) throw new Error(`Export failed: ${res.status}`);
+
+    const blob = await res.blob();
+    const disposition = res.headers.get('Content-Disposition');
+    let filename = `payroll_report.${type === 'pdf' ? 'pdf' : 'xlsx'}`;
+
+    if (disposition) {
+      const match = disposition.match(/filename="?([^";]+)"?/);
+      if (match?.[1]) {
+        filename = match[1];
       }
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      toast.success(`Downloaded ${type.toUpperCase()} report successfully`);
-    } catch (err) {
-      console.error('[EXPORT ERROR]', err);
-      toast.error(`Failed to download ${type.toUpperCase()} report`);
     }
-    
-  };
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+
+    toast.success(`Downloaded ${type.toUpperCase()} report successfully`);
+  } catch (err) {
+    console.error('[EXPORT ERROR]', err);
+    toast.error(`Failed to download ${type.toUpperCase()} report`);
+  }
+};
 
   return (
     
