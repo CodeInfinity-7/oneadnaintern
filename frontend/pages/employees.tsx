@@ -335,7 +335,7 @@ export default function EmployeesPage() {
                     <p className="card-text mb-1"><strong>Designation:</strong> {emp.designation}</p>
                     <p className="card-text mb-1"><strong>Mobile:</strong> {emp.mobile}</p>
                     <p className="card-text mb-1"><strong>Email:</strong> {emp.email}</p>
-                    <button onClick={() => router.push(`/${emp.id}`)} className="btn btn-outline-primary-custom me-2">Edit</button>
+                    <button onClick={() => router.push(`/employees/edit/${emp.id}`)} className="btn btn-outline-primary-custom me-2">Edit</button>
                     <button onClick={() => handleDelete(emp.id!)} className="btn btn-outline-danger">Delete</button>
                   </div>
                 </div>
