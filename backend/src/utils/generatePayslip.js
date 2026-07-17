@@ -14,13 +14,14 @@ async function generatePayslipPDF(employee, salaryEntry, verificationUrl, compan
   const black = '#000000';
 
 
-  const fontBold = path.join(__dirname, '../../assets/Noto_Sans/static/NotoSans-Bold.ttf');
-doc.registerFont('CustomBold', fontBold);
+//  const fontBold = path.join(__dirname, '../../assets/Noto_Sans/static/NotoSans-Bold.ttf');
+//doc.registerFont('CustomBold', fontBold);
 
   // ✅ Register NotoSans font to support ₹
-  const fontPath = path.join(__dirname, '../../assets/Noto_Sans/NotoSans-Regular.ttf');
-  doc.registerFont('Custom', fontPath);
+  //const fontPath = path.join(__dirname, '../../assets/Noto_Sans/NotoSans-Regular.ttf');
+  //doc.registerFont('Custom', fontPath);
   // Header background
+  
   doc.rect(0, 0, doc.page.width, 100).fill(primaryColor);
 
   // OnePayslip title and logo in header
@@ -131,7 +132,7 @@ console.timeEnd('PDF_GENERATION');
   function drawRow(description, earning, deduction, yPos) {
     doc
       .fillColor(black)
-      .font('Custom')
+      .font('Helvetica')
       .fontSize(11)
       .text(description, infoLeftX + 8, yPos, { width: 180 })
       .text(earning, infoLeftX + 190, yPos, { width: 100, align: 'right' })
@@ -152,7 +153,7 @@ console.timeEnd('PDF_GENERATION');
   rowY += rowHeight;
 
   doc
-    .font('CustomBold')
+    .font('Helvetica-Bold')
     .fillColor(primaryColor)
     .fontSize(12)
     .text('Total', infoLeftX + 8, rowY, { width: 180 })
@@ -178,7 +179,7 @@ console.timeEnd('PDF_GENERATION');
   doc
     .fillColor(white)
     .fontSize(14)
-    .font('CustomBold')
+    .font('Helvetica-Bold')
     .text(
       `NET PAY: ₹${Number(salaryEntry.total_amount).toFixed(2)}`,
       infoLeftX + 10,
