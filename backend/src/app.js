@@ -28,11 +28,13 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 const businessesRoute = require("./routes/businesses");
 const employeesRoute = require("./routes/employees");
 const authRoutes = require("./routes/auth");
+const payslipRoutes = require("./routes/payslip");
 
 app.use("/businesses", businessesRoute);
 app.use("/employees", employeesRoute);
 app.use("/auth", authRoutes);
 app.use("/salaries", require("./routes/salaries"));
+app.use("/payslips", payslipRoutes);
 
 // Swagger
 const swaggerDocument = YAML.load(
