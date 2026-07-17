@@ -2,15 +2,22 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+interface Employee {
+  id: number;
+  full_name: string;
+}
 
+interface SalaryEntry {
+  employee_id: number;
+}
 const SalaryForm = dynamic(() => import('../components/SalaryForm'));
 const PayrollSummary = dynamic(() => import('../components/PayrollSummary'));
 const PayslipTable = dynamic(() => import('../components/PayslipTable'));
 
 export default function SalariesPage() {
-  const [employees, setEmployees] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [salaryEntries, setSalaryEntries] = useState<number[]>([]);
   const [loadingEmployees, setLoadingEmployees] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,7 +69,7 @@ export default function SalariesPage() {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          const ids = data.map((s: any) => s.employee_id);
+          const ids = data.map((s: SalaryEntry) => s.employee_id);
           setSalaryEntries(ids);
         } else {
           toast.error('Invalid salary data');
@@ -248,7 +255,9 @@ export default function SalariesPage() {
       setLoadingSummary(false);
     }
   };
-
+if (loadingEmployees) {
+  return <div>Loading...</div>;
+}
   return (
     <div className="container py-5">
       
