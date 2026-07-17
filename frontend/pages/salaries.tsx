@@ -234,18 +234,20 @@ export default function SalariesPage() {
     setSummary(null);
 
     try {
-      const res = await fetch(
-        `/api/salaries/summary?business_id=${businessId}&month=${month}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const [year, monthValue] = month.split("-");
+
+const res = await fetch(
+  `/api/reports/summary?business_id=${businessId}&month=${monthValue}&year=${year}`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
       const data = await res.json();
       if (res.ok) {
-        setSummary(data.total_payroll);
+        setSummary(data.net_paid);
       } else {
         toast.error(data.error || 'Failed to fetch summary');
       }
